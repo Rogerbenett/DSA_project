@@ -21,6 +21,7 @@ struct Node_t {
     int num_children;
     bool is_leaf;
     Node* children[MAX_CHILDREN];
+    Node* parent;
 };
 
 typedef struct RTree_t RTree;
@@ -32,19 +33,20 @@ struct RTree_t {
 };
 
 /*
-DONE `createRTree(int m, int M)`:
+UPDATED DONE `createRTree(int m, int M)`:
     This function creates a new RTree object with the specified minimum and maximum number of children (m and M, respectively).
 
-2. `insertPoint(Point p, RTree* tree)`:
+MOST IMP. (NOT IMPLEMENTED YET) `insertPoint(Point p, RTree* tree)`:
     This function inserts a new point into the RTree. It first finds the leaf node that should contain the point, then adds the point to the node. If the node becomes overfull as a result, it is split.
 
-3. `findLeaf(Point p, Node* node)`:
+DONE `findLeaf(Point p, Node* node)`:
     This function recursively searches for the leaf node that should contain a given point. It returns a pointer to the leaf node.
+    PointIntersectsMBR()
 
-4. `split(Node* node)`:
+MOST IMP. (NOT IMPLEMENTED YET) `split(Node* node)`:
     This function splits an overfull node into two new nodes. It chooses the two children with the greatest difference in MBR area to be in different nodes.
 
-5. `insertRect(MBR rect, Node* node)`:
+doesn't seem imp. (not implemented) `insertRect(MBR rect, Node* node)`:
     This function recursively inserts a rectangle into the RTree. It first finds the leaf node that should contain the rectangle, then adds the rectangle to the node. If the node becomes overfull as a result, it is split.
 
 DONE `search(MBR rect, RTree* tree)`:
@@ -63,22 +65,23 @@ DONE `get_area(MBR rect)`:
 DONE `compute_area(MBR rect1, MBR rect2)`:
     This function computes the area of the smallest rectangle that contains two given rectangles. It returns the area as a double.
 
-DONE `add_child(Node* node, Node* child)`:
+UPDATED DONE `add_child(Node* node, Node* child)`:
     This function adds a child node to a given node. It updates the node's MBR to include the MBR of the child.
 
-DONE `update_mbr(Node* node)`:
+UPDATED DONE `update_mbr(Node* node)`:
     This function updates a node's MBR to include the MBRs of all its children.
 
-13. `adjust_tree(Node* node, Node* child)`:
+DONE `adjust_tree(Node* node, Node* child)`:
     This function adjusts the RTree after a node has been split. It first adds the new child node to the parent node, then updates the MBRs of the parent and all its ancestors, possibly splitting more nodes if necessary.
 */
 
 
-Node* createNode(MBR mbr, bool is_leaf) {
+Node* createNode(MBR mbr, bool is_leaf, Node* parent) {
     Node* node = malloc(sizeof(Node));
     node->mbr = mbr;
     node->num_children = 0;
     node->is_leaf = is_leaf;
+    node->parent = parent;
     for (int i = 0; i < MAX_CHILDREN; i++) {
         node->children[i] = NULL;
     }
@@ -90,8 +93,33 @@ RTree* createRTree(int m, int M) {
     rtree->m = m;
     rtree->M = M;
     rtree->height = 1;
-    rtree->root = createNode((MBR){{0, 0}, {0, 0}}, true);
+    rtree->root = createNode((MBR){{0, 0}, {0, 0}}, true, NULL);
     return rtree;
+}
+
+bool PointIntersectsMBR(Point p, MBR mbr){
+    if((p.x > mbr.top_right.x) || (p.x < mbr.bottom_left.x)){
+        return false;
+    }
+    else if((p.y > mbr.top_right.y) || (p.y < mbr.bottom_left.y)){
+        return false;
+    }
+    else
+        return true;
+}
+
+findLeaf(Point p, Node* node){
+    if ((node->is_leaf) && (PointIntersectsMBR(p, node->mbr))) {
+        return node;
+    }
+    Node* child;
+    for (int i = 0; i < node->num_children; i++) {
+        child = node->children[i];
+        if (PointIntersectsMBR(p, child->mbr)) {
+            return findLeaf(p, child);
+        }
+    }
+    return NULL;
 }
 
 int compute_area(MBR rect1, MBR rect2){
@@ -143,19 +171,20 @@ void update_mbr(Node* node){
     }
 }
 
-split(Node* node){
+Node* split(Node* node){
 
 }
 
-void add_child(Node* node, Node* child){
-    if(node->num_children >= 4){
-        split(node);
-        //split
+void add_child(Node* node, Node* child) {
+    if (node->num_children >= MAX_CHILDREN) {
+        Node* temp = split(node);
+        add_child(node->parent, temp);
     }
-    else{
-        node->children[node->num_children] = child;
-        node->num_children++;
-        node->mbr = get_MBR(node);
+    node->children[node->num_children] = child;
+    node->num_children++;
+    node->mbr = get_MBR(node);
+    if (node->parent != NULL) {
+        update_mbr(node->parent);
     }
 }
 
@@ -222,6 +251,16 @@ List* search(MBR rect, RTree* tree) {
     List* result_list = list_create();
     search_helper(rect, tree->root, result_list);
     return result_list;
+}
+
+void adjust_tree(Node* node, Node* child){
+    add_child(node, child);
+    Node* current = node;
+
+    if (current && (current->num_children > MAX_CHILDREN)) {
+        Node* new = split(current);
+        adjust_tree(node->parent, new);
+    }
 }
 
 /*
