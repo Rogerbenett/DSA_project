@@ -21,7 +21,7 @@ struct Node_t {
     int num_children;
     bool is_leaf;
     Node* children[MAX_CHILDREN];
-    Node* parent;
+    Node* parent;//UPDATED !!
 };
 
 typedef struct RTree_t RTree;
