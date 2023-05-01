@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define MAX_CHILDREN 4
 #define MIN_CHILDREN 2
@@ -21,7 +22,8 @@ struct Node_t {
     int num_children;
     bool is_leaf;
     Node* children[MAX_CHILDREN];
-    Node* parent;//UPDATED !!
+    //Node* parent;//UPDATED !!
+    Point* points[MAX_CHILDREN];
 };
 
 typedef struct RTree_t RTree;
@@ -150,6 +152,22 @@ int min(int x, int y){
         return x;
 }
 
+MBR get_MBR_leaf(Node* node){
+    MBR mbr;
+    int x_max, x_min, y_max, y_min;
+    for(int i=0; i<node->num_children-1; i++){
+        x_max = max(node->points[i]->x, node->points[i+1]->x);
+        y_max = max(node->points[i]->y, node->points[i+1]->y);
+        x_min = min(node->points[i]->x, node->points[i+1]->x);
+        y_min = min(node->points[i]->y, node->points[i+1]->y);
+    }
+    mbr.bottom_left.x = x_min;
+    mbr.bottom_left.y = y_min;
+    mbr.top_right.x = x_max;
+    mbr.top_right.y = y_max;    
+    return mbr;
+}
+
 MBR get_MBR(Node* node){
     MBR mbr = node->children[0]->mbr;
     for(int i=0; i<node->num_children; i++){
@@ -172,9 +190,9 @@ void update_mbr(Node* node){
 }
 
 Node* split(Node* node){
-
 }
 
+/*
 void add_child(Node* node, Node* child) {
     if (node->num_children >= MAX_CHILDREN) {
         Node* temp = split(node);
@@ -187,6 +205,7 @@ void add_child(Node* node, Node* child) {
         update_mbr(node->parent);
     }
 }
+*/
 
 bool intersects(MBR rect1, MBR rect2){
     if(((rect1.bottom_left.x)>(rect2.top_right.x)) || ((rect1.top_right.x)<(rect2.bottom_left.x)))
@@ -195,6 +214,129 @@ bool intersects(MBR rect1, MBR rect2){
         return false;
     else 
         return true;
+}
+
+void merge_x(Point arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+ 
+    Point L[n1], R[n2];
+ 
+    for (i = 0; i < n1; i++){
+        L[i].y = arr[l + i].y;
+        L[i].x = arr[l + i].x;
+    }
+    for (j = 0; j < n2; j++){
+        R[j].y = arr[m + 1 + j].y;
+        R[j].x = arr[m + 1 + j].x;
+    }
+    i = 0; // Initial index of first subarray
+    j = 0; // Initial index of second subarray
+    k = l; // Initial index of merged subarray
+    while (i < n1 && j < n2) {
+        if (L[i].x <= R[j].x) {
+            arr[k].y = L[i].y;
+            arr[k].x = L[i].x;
+            i++;
+        }
+        else {
+            arr[k].y = R[j].y;
+            arr[k].x = R[j].x;
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k].y = L[i].y;
+        arr[k].x = L[i].x;
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k].y = R[j].y;
+        arr[k].x = R[j].x;
+        j++;
+        k++;
+    }
+}
+
+void merge_y(Point arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+ 
+    Point L[n1], R[n2];
+ 
+    for (i = 0; i < n1; i++){
+        L[i].y = arr[l + i].y;
+        L[i].x = arr[l + i].x;
+    }
+    for (j = 0; j < n2; j++){
+        R[j].y = arr[m + 1 + j].y;
+        R[j].x = arr[m + 1 + j].x;
+    }
+    i = 0; // Initial index of first subarray
+    j = 0; // Initial index of second subarray
+    k = l; // Initial index of merged subarray
+    while (i < n1 && j < n2) {
+        if (L[i].y <= R[j].y) {
+            arr[k].y = L[i].y;
+            arr[k].x = L[i].x;
+            i++;
+        }
+        else {
+            arr[k].y = R[j].y;
+            arr[k].x = R[j].x;
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k].y = L[i].y;
+        arr[k].x = L[i].x;
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k].y = R[j].y;
+        arr[k].x = R[j].x;
+        j++;
+        k++;
+    }
+}
+
+
+void mergeSort_x(Point arr[], int l, int r)
+{
+    if (l < r) {
+        int m = l + (r - l) / 2;
+ 
+        // Sort first and second halves
+        mergeSort_x(arr, l, m);
+        mergeSort_x(arr, m + 1, r);
+ 
+        merge_x(arr, l, m, r);
+    }
+}
+
+void mergeSort_y(Point arr[], int l, int r)
+{
+    if (l < r) {
+        int m = l + (r - l) / 2;
+ 
+        // Sort first and second halves
+        mergeSort_y(arr, l, m);
+        mergeSort_y(arr, m + 1, r);
+ 
+        merge_y(arr, l, m, r);
+    }
 }
 
 typedef struct ListNode {
@@ -263,8 +405,66 @@ void adjust_tree(Node* node, Node* child){
     }
 }
 
-/*
+
 int main(void){
+    FILE* ptr;
+    char str[50];
+    // ptr = fopen("data.txt", "r");
+    // int size = 21;
+    ptr = fopen("s1data1lac.txt", "r");
+    int size = 105000;
+ 
+    if (ptr == NULL) {
+        printf("File can't be opened \n");
+    }
+
+    Point arr[size];
+    for(int i=0;i<size;i++){
+        fscanf(ptr, "%d %d", &arr[i].x, &arr[i].y);
+    }
+
+    // printf("Done\n");
+
+    fclose(ptr);
+    mergeSort_x(arr, 0, size-1);
+
+    // printf("Now sorting\n");
+    /*
+    for(int i=0;i<size;i++){
+        if(i%1000 == 0)
+        printf("%d %d\n", arr[i].x, arr[i].y);
+    }
+    */
+
+    mergeSort_y(arr, 0, size-1);
+    
+    /*
+    printf("Now sorting\n");
+    for(int i=0;i<size-1;i++){
+        // printf("%d %d\n", arr[i].x, arr[i].y);
+        if(arr[i].y > arr[i+1].y){
+        printf("NO!! (%d)\n\n", i+1);
+        break;
+        }
+    }
+    */
+    int p = ceil(size/(float)MAX_CHILDREN);
+    int s = ceil(sqrt(p));
+    int slice  = s*MAX_CHILDREN;
+    if(slice<=size){
+        mergeSort_y(arr, 0, size-1);
+    }
+    else{
+        int x = floor(size/(float)slice);
+        for(int i=0; i < x-1; i++){
+            mergeSort_y(arr, i*slice, ((i+1)*slice)-1);
+        }
+        mergeSort_y(arr, x*slice, size-1);
+    }
+    
+    //MBR TESTING BELOW, DO NOT ENTER
+    
+    /*
     MBR test1;
     MBR test2;
     printf("Enter x cordinate of bottom left point of rectangle 1:\n");
@@ -284,5 +484,7 @@ int main(void){
     printf("Enter y cordinate of top right point of rectangle 2:\n");
     scanf("%d", &test2.top_right.y);
     printf("Rectangles intersect? %d\n", intersects(test1, test2));
+    */
+    
 }
-*/
+
