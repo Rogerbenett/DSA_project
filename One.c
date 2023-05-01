@@ -17,7 +17,7 @@ typedef struct MBR {
 
 typedef struct Node_t Node;
 struct Node_t {
-    MBR mbr;
+    MBR mbr;//this has to be an array MBR mbr[4]
     int num_children;
     bool is_leaf;
     Node* children[MAX_CHILDREN];
