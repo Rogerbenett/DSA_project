@@ -142,7 +142,10 @@ int min(int x, int y){
 
 MBR get_MBR_leaf(Node* node){
     MBR mbr;
-    int x_max, x_min, y_max, y_min;
+    int x_max = node->points[0]->x;
+    int x_min = node->points[0]->x;
+    int y_max = node->points[0]->y;
+    int y_min = node->points[0]->y;
     for(int i=0; i<node->num_children-1; i++){
         x_max = max(node->points[i]->x, node->points[i+1]->x);
         y_max = max(node->points[i]->y, node->points[i+1]->y);
@@ -157,7 +160,11 @@ MBR get_MBR_leaf(Node* node){
 }
 
 MBR get_MBR(Node* node){
-    MBR mbr = node->children[0]->mbr;
+    MBR mbr;
+    mbr.bottom_left.x = node->children[0]->mbr.bottom_left.x;
+    mbr.bottom_left.y = node->children[0]->mbr.bottom_left.y;
+    mbr.top_right.x = node->children[0]->mbr.top_right.x;
+    mbr.top_right.y = node->children[0]->mbr.top_right.y;  
     for(int i=0; i<node->num_children; i++){
         mbr.top_right.x = max(mbr.top_right.x, node->children[i]->mbr.top_right.x);
         mbr.top_right.y = max(mbr.top_right.y, node->children[i]->mbr.top_right.y);
@@ -168,7 +175,11 @@ MBR get_MBR(Node* node){
 }
 
 void update_mbr(Node* node){
-    node->mbr = node->children[0]->mbr;
+    MBR mbr;
+    mbr.bottom_left.x = node->children[0]->mbr.bottom_left.x;
+    mbr.bottom_left.y = node->children[0]->mbr.bottom_left.y;
+    mbr.top_right.x = node->children[0]->mbr.top_right.x;
+    mbr.top_right.y = node->children[0]->mbr.top_right.y;  
     for(int i=1; i<node->num_children; i++){
         node->mbr.top_right.x = max(node->mbr.top_right.x, node->children[i]->mbr.top_right.x);
         node->mbr.top_right.y = max(node->mbr.top_right.y, node->children[i]->mbr.top_right.y);
@@ -581,13 +592,17 @@ int main(void){
     int slice  = s*MAX_CHILDREN;
     if(slice<=size){
         mergeSort_y(arr, 0, size-1);
+        mergeSort_x(arr, 0, size-1);
     }
     else{
         int x = floor(size/(float)slice);
         for(int i=0; i < x-1; i++){
             mergeSort_y(arr, i*slice, ((i+1)*slice)-1);
+            mergeSort_x(arr, i*slice, ((i+1)*slice)-1);
+            
         }
         mergeSort_y(arr, x*slice, size-1);
+        mergeSort_x(arr, x*slice, size-1);
     }
 
     RTree* tree = createRTree(2,4);
