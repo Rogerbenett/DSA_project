@@ -376,13 +376,20 @@ void search_helper(MBR rect, Node* node, List* result_list) {
     for (int i = 0; i < node->num_children; i++) {
         if (intersects(rect, node->children[i]->mbr)) {
             if (node->children[i]->is_leaf) {
+                printf("This is an external node\n");
+                printf("MBR value: \n", node->mbr);
+                printf("Datapoint stored: \n", node->points);
+
                 for (int j = 0; j < node->children[i]->num_children; j++) {
                     if (intersects(rect, node->children[i]->children[j]->mbr)) {
+                        get_MBR(node);
                         list_append(result_list, node->children[i]->children[j]);
                     }
                 }
             } 
             else {
+                printf("This is an internal node\n");
+                printf("MBR value: \n", node->mbr);
                 search_helper(rect, node->children[i], result_list);
             }
         }
