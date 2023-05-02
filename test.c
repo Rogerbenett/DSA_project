@@ -496,14 +496,33 @@ RTree* insertDataSTR(Point* arr, RTree* tree)
     return tree;
 }
 
+int count_lines(char* filename) {
+    FILE* fp;
+    int count = 0;
+    char ch;
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file %s\n", filename);
+        return -1;
+    }
+    while ((ch = fgetc(fp)) != EOF) {
+        if (ch == '\n') {
+            count++;
+        }
+    }
+    fclose(fp);
+    return count;
+}
+
 
 int main(void){
     FILE* ptr;
+    char* filename = "data.txt";
     char str[50];
-    // ptr = fopen("data.txt", "r");
-    // int size = 21;
-    ptr = fopen("s1data1lac.txt", "r");
-    int size = 105000;
+    ptr = fopen(filename, "r");
+    int size = count_lines(filename);
+    //data.txt - 21
+    //s1data1lac - 105000
  
     if (ptr == NULL) {
         printf("File can't be opened \n");
