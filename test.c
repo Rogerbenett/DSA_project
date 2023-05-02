@@ -549,7 +549,7 @@ int main(void){
     printf("Enter file name which contains data:\n");
     char filename[50];
     scanf("%s", filename);
-    int size = count_lines(filename) + 1;
+    int size = count_lines(filename);
     
     FILE* ptr;
     ptr = fopen(filename, "r");
