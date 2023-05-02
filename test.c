@@ -4,7 +4,6 @@
 #include <math.h>
 
 #define MAX_CHILDREN 4
-#define MIN_CHILDREN 2
 
 typedef struct Point{
     int x;
@@ -28,9 +27,77 @@ struct Node_t{
 typedef struct RTree_t RTree;
 struct RTree_t{
     int M;
-    int height;
     Node* root;
 };
+
+Node* createNode(MBR mbr, bool is_leaf);
+//creates and returns Node struct
+
+RTree* createRTree(int M);
+//creates and returns RTree struct
+
+int max(int x, int y);
+//returns max. of given two integers
+
+int min(int x, int y);
+//retruns min. of given two integers
+
+float centerOfMBR_x(Node* node);
+//returns X cordinate of center of MBR
+
+float centerOfMBR_y(Node* node);
+//returns Y cordinate of center of MBR
+
+bool intersects(MBR rect1, MBR rect2);
+//tells if rect1(rectangle) and rect2(rectangle) intrsect
+
+bool PointIntersectsMBR(Point* p, MBR mbr);
+//tells if a point and mbr(rectangle) intrsect
+
+MBR get_MBR_leaf(Node* node);
+//calculates and returns MBR for leaf nodes
+
+MBR get_MBR(Node* node);
+//calculates and returns MBR for non-leaf nodes
+
+void merge_x(Point arr[], int l, int m, int r);
+//implementation of merging function (iterative) for X cordinate sorting
+
+void mergeSort_x(Point arr[], int l, int r);
+//merge sort (recursive) algorithm for soring points by X cordinate of Point array
+
+void merge_y(Point arr[], int l, int m, int r);
+//implementation of merging function (iterative) for Y cordinate sorting
+
+void mergeSort_y(Point arr[], int l, int r);
+//merge sort (recursive) algorithm for soring points by Y cordinate of Point array
+
+void merge_x_node(Node** arr, int l, int m, int r);
+//implementation of merging function (iterative) for X cordinate sorting
+
+void mergeSort_x_node(Node** arr, int l, int r);
+//merge sort (recursive) algorithm for soring points by X cordinate of Node pointer array
+
+void merge_y_node(Node** arr, int l, int m, int r);
+//implementation of merging function (iterative) for Y cordinate sorting
+
+void mergeSort_y_node(Node** arr, int l, int r);
+//merge sort (recursive) algorithm for soring points by Y cordinate of Node pointer array
+
+void Sort_Nodes(Node** list,int size);
+//algorithm for sorting of node pointer array according to size (and slice value)
+
+void Print_tree(Node* rootnode);
+//algorithm for printing entire R-Tree
+
+Node** InsertNode(Node** list,int size);
+//algorithm as mentioned in research paper (STR) for bottom-up creation of R-Tree
+
+RTree* insertDataSTR(Point* arr, RTree* tree,int size);
+//algorithm for creating leaf nodes of R-Tree and inserting data points in them
+
+int count_lines(char* filename);
+//algorithm for returning number of lines in file (used for adding data in Point array)
 
 
 Node* createNode(MBR mbr, bool is_leaf){
@@ -44,10 +111,9 @@ Node* createNode(MBR mbr, bool is_leaf){
     return node;
 }
 
-RTree* createRTree(int M) {
+RTree* createRTree(int M){
     RTree* rtree = malloc(sizeof(RTree));
     rtree->M = M;
-    rtree->height = 1;
     MBR* mbr = (MBR*)malloc(sizeof(MBR));
     rtree->root = createNode(*mbr, true);
     return rtree;
@@ -362,8 +428,7 @@ void mergeSort_y_node(Node** arr, int l, int r){
     }
 }
 
-void mergeSort_x_node(Node** arr, int l, int r)
-{
+void mergeSort_x_node(Node** arr, int l, int r){
     if (l < r){
         int m = l + (r - l) / 2;
         // Sort first and second halves
@@ -481,7 +546,9 @@ int count_lines(char* filename){
 
 
 int main(void){
-    char* filename = "data.txt";
+    printf("Enter file name which contains data:\n");
+    char filename[50];
+    scanf("%s", filename);
     int size = count_lines(filename) + 1;
     
     FILE* ptr;
@@ -517,5 +584,4 @@ int main(void){
     RTree* tree = createRTree(4);
     tree = insertDataSTR(arr, tree, size);
     Print_tree(tree->root);
-
 }
