@@ -16,6 +16,7 @@ Node** InsertNode(Node** list)
             {
                 n->children[i] = list[j+i];
             }
+            n->num_children=4;
             mbr= get_MBR(n);
             n->mbr=mbr;
             listNodes[j/4]=n;
@@ -33,6 +34,7 @@ Node** InsertNode(Node** list)
             {
                n->children[i] = NULL;  
             }
+            n->num_children=extra;
             Node* n = createNode(mbr,0);
             mbr= get_MBR(n);
             n->mbr=mbr;
@@ -43,7 +45,7 @@ Node** InsertNode(Node** list)
 
 RTree* insertDataSTR(Point arr[], RTree* tree)
 {
-    Node** LeafNodes;
+    Node* LeafNodes[30000];
     int no_of_points=sizeof(arr)/sizeof(Point);
     int extra = no_of_points%4;
     int i;
@@ -55,31 +57,23 @@ RTree* insertDataSTR(Point arr[], RTree* tree)
         {
         *(LeafNodes[(i/4)]->points[k])=arr[i+k];
         }
+        LeafNodes[(i/4)]->num_children=4;
         mbr = get_MBR_leaf(LeafNodes[(i/4)]);
         LeafNodes[(i/4)]->mbr=mbr;
     }
-    Point lastPoints[4];
-    int j;
-    for(j=0;j<etxra;j++)
+    if(extra!=0)  
     {
-        lastPoints[j]= arr[no_of_points-extra+j];
-    }
-    for(j;j<4;j++)
-    {
-        lastPoints[j]= arr[no_of_points-extra];
-    }  
-    MBR mbr;
+        MBR mbr;
         LeafNodes[(i/4)] = createNode(mbr,1);
-        for(int k=0;k<4;k++)
+        for(int k=0;k<extra;k++)
         {
-        *(LeafNodes[(i/4)]->points[k])=lastPoints[k];
+            *(LeafNodes[(i/4)]->points[k])=arr[i+k];
         }
+        LeafNodes[(i/4)]->num_children=extra;
         mbr = get_MBR_leaf(LeafNodes[(i/4)]);
         LeafNodes[(i/4)]->mbr=mbr;
-    // MBR mbr =findMBR(lastPoints[0],lastPoints[1],lastPoints[2],lastPoints[3]);
-    // LeafNodes[(i/4)] = createNode(mbr,1);
+    }
     Node* rootnode= *(InsertNode(LeafNodes));  
-    RTree* r= createRTree(2, 4);
-    r->root= rootnode;
-    return r;
+    tree->root= rootnode;
+    return tree;
 }
