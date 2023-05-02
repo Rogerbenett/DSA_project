@@ -37,42 +37,30 @@ struct RTree_t {
 /*
 UPDATED DONE `createRTree(int m, int M)`:
     This function creates a new RTree object with the specified minimum and maximum number of children (m and M, respectively).
-
 MOST IMP. (NOT IMPLEMENTED YET) `insertPoint(Point p, RTree* tree)`:
     This function inserts a new point into the RTree. It first finds the leaf node that should contain the point, then adds the point to the node. If the node becomes overfull as a result, it is split.
-
 DONE `findLeaf(Point p, Node* node)`:
     This function recursively searches for the leaf node that should contain a given point. It returns a pointer to the leaf node.
     PointIntersectsMBR()
-
 MOST IMP. (NOT IMPLEMENTED YET) `split(Node* node)`:
     This function splits an overfull node into two new nodes. It chooses the two children with the greatest difference in MBR area to be in different nodes.
-
 doesn't seem imp. (not implemented) `insertRect(MBR rect, Node* node)`:
     This function recursively inserts a rectangle into the RTree. It first finds the leaf node that should contain the rectangle, then adds the rectangle to the node. If the node becomes overfull as a result, it is split.
-
 DONE `search(MBR rect, RTree* tree)`:
     This function searches for all rectangles in the RTree that overlap with a given rectangle. It returns a list of pointers to the rectangles.
     search_helper()... , intersects()
-
 7. `remove(MBR rect, RTree* tree)`:
     This function removes all rectangles in the RTree that overlap with a given rectangle. It first searches for the rectangles to be removed, then deletes them from their respective nodes. If a node becomes underfull as a result, it is merged with a sibling node.
-
 DONE `get_MBR(Node* node)`:
     This function computes the minimum bounding rectangle (MBR) that contains all the rectangles in a given node. It returns the MBR as a new rectangle.
-
 DONE `get_area(MBR rect)`:
     This function computes the area of a given rectangle. It returns the area as a double.
-
 DONE `compute_area(MBR rect1, MBR rect2)`:
     This function computes the area of the smallest rectangle that contains two given rectangles. It returns the area as a double.
-
 UPDATED DONE `add_child(Node* node, Node* child)`:
     This function adds a child node to a given node. It updates the node's MBR to include the MBR of the child.
-
 UPDATED DONE `update_mbr(Node* node)`:
     This function updates a node's MBR to include the MBRs of all its children.
-
 DONE `adjust_tree(Node* node, Node* child)`:
     This function adjusts the RTree after a node has been split. It first adds the new child node to the parent node, then updates the MBRs of the parent and all its ancestors, possibly splitting more nodes if necessary.
 */
@@ -417,6 +405,31 @@ void print_tree(RTree* tree){
 //         adjust_tree(node->parent, new);
 //     }
 // }
+void Print_tree(Node* rootnode)
+{   
+    if(rootnode==NULL)
+    {
+        return;
+    }
+    if(rootnode->is_leaf==0)
+    {
+        //
+        printf("Internal node; MBR values: Bottom left: (%d,%d)  Top right: (%d,%d)\n", rootnode->mbr.bottom_left.x, rootnode->mbr.bottom_left.y, rootnode->mbr.top_right.x, rootnode->mbr.top_right.y);
+        for(int j=0;j<rootnode->num_children;j++)
+        {
+        Print_tree(rootnode->children[j]);
+        }
+    }
+    else if (rootnode->is_leaf==1)
+    {
+        printf("Internal node; MBR values: Bottom left: (%d,%d)  Top right: (%d,%d)\n", rootnode->mbr.bottom_left.x, rootnode->mbr.bottom_left.y, rootnode->mbr.top_right.x, rootnode->mbr.top_right.y);
+        for(int i=0;i<rootnode->num_children;i++)
+        {
+            printf("Datapoints:\t (%d,%d)\n", rootnode->points[i]->x, rootnode->points[i]->y);
+        }
+    }
+
+}
 
 Node** InsertNode(Node** list,int size) 
     { 
@@ -579,7 +592,8 @@ int main(void){
 
     RTree* tree = createRTree(2,4);
     tree = insertDataSTR(arr, tree, size);
-    print_tree(tree);
+    Print_tree(tree->root);
+    //print_tree(tree);
     
     //MBR TESTING BELOW, DO NOT ENTER
     
