@@ -424,7 +424,8 @@ Node** InsertNode(Node** list,int size)
             return list;
         }
         int p = ceil(size/(float)MAX_CHILDREN);
-        Node* listNodes[p];
+        //Node* listNodes[p];
+        Node** LeafNodes=(Node**)malloc(sizeof(Node*)*p);
        // int size = sizeof(list)/sizeof(Node*);
         int extra=size%4;
         int j;
