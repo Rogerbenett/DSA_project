@@ -398,7 +398,7 @@ void search(MBR rect, RTree* tree) {
     // return result_list;
 }
 
-print_tree(RTree* tree){
+void print_tree(RTree* tree){
     MBR temp;
     temp.top_right.x = tree->root->mbr.top_right.x;
     temp.top_right.y = tree->root->mbr.top_right.y;
@@ -573,6 +573,9 @@ int main(void){
         }
         mergeSort_y(arr, x*slice, size-1);
     }
+
+    RTree* tree = createRTree(2,4);
+    tree = insertDataSTR(arr, tree, size);
     
     //MBR TESTING BELOW, DO NOT ENTER
     
