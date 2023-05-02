@@ -442,10 +442,151 @@ void Print_tree(Node* rootnode)
     }
 
 }
-void Sort_Nodes(Node**list,int size) // takes array of pointer to node and sorts in wrt value Centreof(list[i]->mbr)
-{
-;
+
+float centerOfMBR_x(Node* node){
+    return (node->mbr.bottom_left.x+node->mbr.top_right.x)/2.0;
 }
+
+float centerOfMBR_y(Node* node){
+    return (node->mbr.bottom_left.y+node->mbr.top_right.y)/2.0;
+}
+
+
+void merge_y_node(Node** arr, int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+ 
+    Node* L[n1];
+    Node* R[n2];
+ 
+    for (i = 0; i < n1; i++){
+        L[i] = arr[l + i];
+        L[i] = arr[l + i];
+    }
+    for (j = 0; j < n2; j++){
+        R[j] = arr[m + 1 + j];
+        R[j] = arr[m + 1 + j];
+    }
+    i = 0; // Initial index of first subarray
+    j = 0; // Initial index of second subarray
+    k = l; // Initial index of merged subarray
+    while (i < n1 && j < n2) {
+        if (centerOfMBR_y((L[i])) <= centerOfMBR_y(R[j])) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void merge_x_node(Node** arr, int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+ 
+    Node* L[n1];
+    Node* R[n2];
+ 
+    for (i = 0; i < n1; i++){
+        L[i] = arr[l + i];
+        L[i] = arr[l + i];
+    }
+    for (j = 0; j < n2; j++){
+        R[j] = arr[m + 1 + j];
+        R[j] = arr[m + 1 + j];
+    }
+    i = 0; // Initial index of first subarray
+    j = 0; // Initial index of second subarray
+    k = l; // Initial index of merged subarray
+    while (i < n1 && j < n2) {
+        if (centerOfMBR_x((L[i])) <= centerOfMBR_x(R[j])) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort_y_node(Node** arr, int l, int r)
+{
+    if (l < r) {
+        int m = l + (r - l) / 2;
+ 
+        // Sort first and second halves
+        mergeSort_y_node(arr, l, m);
+        mergeSort_y_node(arr, m + 1, r);
+ 
+        merge_y_node(arr, l, m, r);
+    }
+}
+
+void mergeSort_x_node(Node** arr, int l, int r)
+{
+    if (l < r) {
+        int m = l + (r - l) / 2;
+ 
+        // Sort first and second halves
+        mergeSort_x_node(arr, l, m);
+        mergeSort_x_node(arr, m + 1, r);
+ 
+        merge_x_node(arr, l, m, r);
+    }
+}
+
+void Sort_Nodes(Node** list,int size){ // takes array of pointer to node and sorts in wrt value Centreof(list[i]->mbr)
+    int p = ceil(size/(float)MAX_CHILDREN); 
+    int s = ceil(sqrt(p));
+    int slice  = s*MAX_CHILDREN;
+    mergeSort_x_node(list, 0, size-1);
+
+    if(slice>=size){
+        mergeSort_y_node(list, 0, size-1);
+    }
+    else{
+        int x = floor(size/(float)slice);
+        for(int i=0; i < x; i++){
+            mergeSort_y_node(list, i*slice, ((i+1)*slice)-1);
+        }
+        mergeSort_y_node(list, x*slice, size-1);
+    }
+
+}
+
 Node** InsertNode(Node** list,int size) 
     { 
         if(size==1)
