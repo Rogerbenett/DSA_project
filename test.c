@@ -99,11 +99,11 @@ RTree* createRTree(int m, int M) {
     return rtree;
 }
 
-bool PointIntersectsMBR(Point p, MBR mbr){
-    if((p.x > mbr.top_right.x) || (p.x < mbr.bottom_left.x)){
+bool PointIntersectsMBR(Point* p, MBR mbr){
+    if((p->x > mbr.top_right.x) || (p->x < mbr.bottom_left.x)){
         return false;
     }
-    else if((p.y > mbr.top_right.y) || (p.y < mbr.bottom_left.y)){
+    else if((p->y > mbr.top_right.y) || (p->x < mbr.bottom_left.y)){
         return false;
     }
     else
@@ -349,57 +349,64 @@ typedef struct List {
     ListNode* tail;
 } List;
 
-List* list_create() {
-    List* list = (List*) malloc(sizeof(List));
-    list->head = NULL;
-    list->tail = NULL;
-    return list;
-}
+// List* list_create() {
+//     List* list = (List*) malloc(sizeof(List));
+//     list->head = NULL;
+//     list->tail = NULL;
+//     return list;
+// }
 
-void list_append(List* list, void* data) {
-    ListNode* node = (ListNode*) malloc(sizeof(ListNode));
-    node->data = data;
-    node->next = NULL;
-    if (list->tail != NULL) {
-        list->tail->next = node;
-        list->tail = node;
-    } else {
-        list->head = node;
-        list->tail = node;
-    }
-}
+// void list_append(List* list, void* data) {
+//     ListNode* node = (ListNode*) malloc(sizeof(ListNode));
+//     node->data = data;
+//     node->next = NULL;
+//     if (list->tail != NULL) {
+//         list->tail->next = node;
+//         list->tail = node;
+//     } else {
+//         list->head = node;
+//         list->tail = node;
+//     }
+// }
 
-void search_helper(MBR rect, Node* node, List* result_list) {
+void search_helper(MBR rect, Node* node) {
     if (node == NULL) {
         return;
     }
     for (int i = 0; i < node->num_children; i++) {
         if (intersects(rect, node->children[i]->mbr)) {
             if (node->children[i]->is_leaf) {
+                printf("MBR value: (%d,%d) - (%d,%d)\n", node->mbr.top_right.x, node->mbr.top_right.y, node->mbr.bottom_left.x, node->mbr.bottom_left.y);
                 printf("This is an external node\n");
-                printf("MBR value: \n", node->mbr);
-                printf("Datapoint stored: \n", node->points);
-
+                
                 for (int j = 0; j < node->children[i]->num_children; j++) {
-                    if (intersects(rect, node->children[i]->children[j]->mbr)) {
-                        get_MBR(node);
-                        list_append(result_list, node->children[i]->children[j]);
+                    if(PointIntersectsMBR(node->children[i]->points[j], rect)){
+                        printf("Datapoint stored:\t (%d,%d)\n", node->points[i]->x, node->points[i]->y);
                     }
                 }
             } 
             else {
+                printf("MBR value: (%d,%d) - (%d,%d)\n", node->mbr.top_right.x, node->mbr.top_right.y, node->mbr.bottom_left.x, node->mbr.bottom_left.y);
                 printf("This is an internal node\n");
-                printf("MBR value: \n", node->mbr);
-                search_helper(rect, node->children[i], result_list);
+                // search_helper(rect, node->children[i], result_list);
             }
         }
     }
 }
 
 List* search(MBR rect, RTree* tree) {
-    List* result_list = list_create();
-    search_helper(rect, tree->root, result_list);
-    return result_list;
+    // List* result_list = list_create();
+    search_helper(rect, tree->root);
+    // return result_list;
+}
+
+print_tree(RTree* tree){
+    MBR temp;
+    temp.top_right.x = tree->root->mbr.top_right.x;
+    temp.top_right.y = tree->root->mbr.top_right.y;
+    temp.bottom_left.x = tree->root->mbr.bottom_left.x;
+    temp.bottom_left.y = tree->root->mbr.bottom_left.y;
+    search(temp, tree);
 }
 
 // void adjust_tree(Node* node, Node* child){
