@@ -380,7 +380,7 @@ void search_helper(MBR rect, Node* node) {
                 
                 for (int j = 0; j < node->children[i]->num_children; j++) {
                     if(PointIntersectsMBR(node->children[i]->points[j], rect)){
-                        printf("Datapoints:\t (%d,%d)\n", node->points[i]->x, node->points[i]->y);
+                        printf("Datapoints:\t (%d,%d)\n", node->children[i]->points[j]->x, node->children[i]->points[j]->y);
                     }
                 }
             } 
