@@ -424,8 +424,8 @@ Node** InsertNode(Node** list,int size)
             return list;
         }
         int p = ceil(size/(float)MAX_CHILDREN);
-        //Node* listNodes[p];
-        Node** LeafNodes=(Node**)malloc(sizeof(Node*)*p);
+        Node* listNodes[p];
+        //Node** listNodes=(Node**)malloc(sizeof(Node*)*p);
        // int size = sizeof(list)/sizeof(Node*);
         int extra=size%4;
         int j;
@@ -468,6 +468,7 @@ RTree* insertDataSTR(Point* arr, RTree* tree,int size)
     int p = ceil(size/(float)MAX_CHILDREN);
     Node* LeafNodes[p];
     // int no_of_points=sizeof(arr)/sizeof(arr[0]);
+    //Node** LeafNodes=(Node**)malloc(sizeof(Node*)*p);
     int extra = size%MAX_CHILDREN;
     int i;
     for(i=0; i<size-extra; i=i+4)
@@ -476,7 +477,7 @@ RTree* insertDataSTR(Point* arr, RTree* tree,int size)
         LeafNodes[(i/4)] = createNode(mbr,1);
         for(int k=0;k<4;k++)
         {
-        *(LeafNodes[(i/4)]->points[k])=arr[i+k];
+        (LeafNodes[(i/4)]->points[k])=&(arr[i+k]);
         }
         LeafNodes[(i/4)]->num_children=4;
         mbr = get_MBR_leaf(LeafNodes[(i/4)]);
