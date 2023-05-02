@@ -442,14 +442,18 @@ void Print_tree(Node* rootnode)
     }
 
 }
-
+void Sort_Nodes(Node**list,int size) // takes array of pointer to node and sorts in wrt value Centreof(list[i]->mbr)
+{
+;
+}
 Node** InsertNode(Node** list,int size) 
     { 
         if(size==1)
         {
             return list;
         }
-        int p = ceil(size/(float)MAX_CHILDREN);
+        Sort_Nodes(list,size);
+        int p = ceil(size/(float)MAX_CHILDREN); 
         Node* listNodes[p];
         //Node** listNodes=(Node**)malloc(sizeof(Node*)*p);
        // int size = sizeof(list)/sizeof(Node*);
