@@ -365,6 +365,7 @@ typedef struct List {
 //         list->tail = node;
 //     } else {
 //         list->head = node;
+
 //         list->tail = node;
 //     }
 // }
@@ -489,7 +490,7 @@ RTree* insertDataSTR(Point* arr, RTree* tree,int size)
         LeafNodes[(i/4)] = createNode(mbr,1);
         for(int k=0;k<extra;k++)
         {
-            *(LeafNodes[(i/4)]->points[k])=arr[i+k];
+            (LeafNodes[(i/4)]->points[k])=&(arr[i+k]);
         }
         LeafNodes[(i/4)]->num_children=extra;
         mbr = get_MBR_leaf(LeafNodes[(i/4)]);
@@ -578,6 +579,7 @@ int main(void){
 
     RTree* tree = createRTree(2,4);
     tree = insertDataSTR(arr, tree, size);
+    print_tree(tree);
     
     //MBR TESTING BELOW, DO NOT ENTER
     
