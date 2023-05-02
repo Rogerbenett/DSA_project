@@ -146,11 +146,11 @@ MBR get_MBR_leaf(Node* node){
     int x_min = node->points[0]->x;
     int y_max = node->points[0]->y;
     int y_min = node->points[0]->y;
-    for(int i=0; i<node->num_children-1; i++){
-        x_max = max(node->points[i]->x, node->points[i+1]->x);
-        y_max = max(node->points[i]->y, node->points[i+1]->y);
-        x_min = min(node->points[i]->x, node->points[i+1]->x);
-        y_min = min(node->points[i]->y, node->points[i+1]->y);
+    for(int i=0; i<node->num_children; i++){
+        x_max = max(x_max, node->points[i]->x);
+        y_max = max(y_max, node->points[i]->y);
+        x_min = min(x_min, node->points[i]->x);
+        y_min = min(y_min, node->points[i]->y);
     }
     mbr.bottom_left.x = x_min;
     mbr.bottom_left.y = y_min;
@@ -158,6 +158,7 @@ MBR get_MBR_leaf(Node* node){
     mbr.top_right.y = y_max;    
     return mbr;
 }
+
 
 MBR get_MBR(Node* node){
     MBR mbr;
