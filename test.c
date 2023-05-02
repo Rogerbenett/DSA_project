@@ -422,7 +422,7 @@ void Print_tree(Node* rootnode)
     }
     else if (rootnode->is_leaf==1)
     {
-        printf("Internal node; MBR values: Bottom left: (%d,%d)  Top right: (%d,%d)\n", rootnode->mbr.bottom_left.x, rootnode->mbr.bottom_left.y, rootnode->mbr.top_right.x, rootnode->mbr.top_right.y);
+        printf("External node; MBR values: Bottom left: (%d,%d)  Top right: (%d,%d)\n", rootnode->mbr.bottom_left.x, rootnode->mbr.bottom_left.y, rootnode->mbr.top_right.x, rootnode->mbr.top_right.y);
         for(int i=0;i<rootnode->num_children;i++)
         {
             printf("Datapoints:\t (%d,%d)\n", rootnode->points[i]->x, rootnode->points[i]->y);
