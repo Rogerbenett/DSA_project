@@ -575,8 +575,6 @@ int main(void){
         printf("%d %d\n", arr[i].x, arr[i].y);
     }
     */
-
-    mergeSort_y(arr, 0, size-1);
     
     /*
     printf("Now sorting\n");
@@ -591,19 +589,19 @@ int main(void){
     int p = ceil(size/(float)MAX_CHILDREN);
     int s = ceil(sqrt(p));
     int slice  = s*MAX_CHILDREN;
-    if(slice<=size){
+    if(slice>=size){
         mergeSort_y(arr, 0, size-1);
-        mergeSort_x(arr, 0, size-1);
+        //mergeSort_x(arr, 0, size-1);
     }
     else{
         int x = floor(size/(float)slice);
-        for(int i=0; i < x-1; i++){
+        for(int i=0; i < x; i++){
             mergeSort_y(arr, i*slice, ((i+1)*slice)-1);
-            mergeSort_x(arr, i*slice, ((i+1)*slice)-1);
+            //mergeSort_x(arr, i*slice, ((i+1)*slice)-1);
             
         }
         mergeSort_y(arr, x*slice, size-1);
-        mergeSort_x(arr, x*slice, size-1);
+        //mergeSort_x(arr, x*slice, size-1);
     }
 
     RTree* tree = createRTree(2,4);
