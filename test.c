@@ -416,11 +416,11 @@ Node** InsertNode(Node** list,int size){
         if(extra!=0){
             MBR mbr;
             Node* n = createNode(mbr,0);
-            int i;
-            for(i = 0; i <extra; i++) {
+            int i=0;
+            for(; i <extra; i++) {
                 n->children[i] = list[j+i];
             }
-            for(i;i<MAX_CHILDREN;i++){
+            for(;i<MAX_CHILDREN;i++){
                n->children[i] = NULL;  
             }
             n->num_children=extra;
