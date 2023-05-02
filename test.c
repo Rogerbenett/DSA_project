@@ -461,7 +461,7 @@ Node** InsertNode(Node** list,int size)
             n->mbr=mbr;
             listNodes[j/4]=n;
         }
-        InsertNode(listNodes,p);
+         return InsertNode(listNodes,p);
     }
 
 RTree* insertDataSTR(Point* arr, RTree* tree,int size)
@@ -525,7 +525,7 @@ int main(void){
     char* filename = "data.txt";
     char str[50];
     ptr = fopen(filename, "r");
-    int size = count_lines(filename);
+    int size = count_lines(filename) + 1;
     //data.txt - 21
     //s1data1lac - 105000
  
