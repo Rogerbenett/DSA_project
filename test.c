@@ -376,17 +376,17 @@ void search_helper(MBR rect, Node* node) {
     for (int i = 0; i < node->num_children; i++) {
         if (intersects(rect, node->children[i]->mbr)) {
             if (node->children[i]->is_leaf) {
-                printf("MBR value: (%d,%d) - (%d,%d)\n", node->mbr.top_right.x, node->mbr.top_right.y, node->mbr.bottom_left.x, node->mbr.bottom_left.y);
+                printf("MBR values:\t Bottom left: (%d,%d)\t Top right: (%d,%d)\n", node->mbr.bottom_left.x, node->mbr.bottom_left.y, node->mbr.top_right.x, node->mbr.top_right.y);
                 printf("This is an external node\n");
                 
                 for (int j = 0; j < node->children[i]->num_children; j++) {
                     if(PointIntersectsMBR(node->children[i]->points[j], rect)){
-                        printf("Datapoint stored:\t (%d,%d)\n", node->points[i]->x, node->points[i]->y);
+                        printf("Datapoints:\t (%d,%d)\n", node->points[i]->x, node->points[i]->y);
                     }
                 }
             } 
             else {
-                printf("MBR value: (%d,%d) - (%d,%d)\n", node->mbr.top_right.x, node->mbr.top_right.y, node->mbr.bottom_left.x, node->mbr.bottom_left.y);
+                printf("MBR values:\t Bottom left: (%d,%d)\t Top right: (%d,%d)\n", node->mbr.bottom_left.x, node->mbr.bottom_left.y, node->mbr.top_right.x, node->mbr.top_right.y);
                 printf("This is an internal node\n");
                 // search_helper(rect, node->children[i], result_list);
             }
@@ -394,7 +394,7 @@ void search_helper(MBR rect, Node* node) {
     }
 }
 
-List* search(MBR rect, RTree* tree) {
+void search(MBR rect, RTree* tree) {
     // List* result_list = list_create();
     search_helper(rect, tree->root);
     // return result_list;
